@@ -1,14 +1,17 @@
 require('dotenv').config();
 const express = require('express');
-
+const cors = require("cors");
 const mysql = require('mysql2');
 
 const jwt = require('jsonwebtoken');
 
+
 const app = express();
 app.use(express.json());
+app.use(cors())
 
-const JWT_SECRET = 'super-secret-key-123';
+
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const fluxNexusHandler = mysql.createConnection({
     host: process.env.DB_HOST,
