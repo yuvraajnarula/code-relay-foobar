@@ -370,65 +370,148 @@ app.delete('/api/tasks/:id', (req, res) => {
     });
 });
 
-app.get('/api/analytics/dashboard', (req, res) => {
-    let userId = 1;
-    try {
-        const token = req.headers.authorization?.split(' ')[1];
-        if (token) userId = jwt.verify(token, JWT_SECRET).id;
-    } catch (e) { }
+app.get("/api/analytics/dashboard", (req, res) => {
+  let userId = 1;
 
-    fluxNexusHandler.query(
-        'SELECT w.id FROM workspaces w JOIN workspace_members wm ON w.id = wm.workspace_id WHERE wm.user_id = ?',
-        [userId],
-        (err, workspaces) => {
-            if (err || !workspaces || workspaces.length === 0) {
-                return res.json({ totalTasks: 0, completedTasks: 0, inProgressTasks: 0, overdueTasks: 0, totalProjects: 0, totalWorkspaces: 0, recentActivity: [], tasksByStatus: [], tasksByPriority: [] });
-            }
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (token) userId = jwt.verify(token, JWT_SECRET).id;
+  } catch (e) {}
 
-            const wsIds = workspaces.map(w => w.id);
-            const placeholders = wsIds.map(() => '?').join(',');
+  // include BOTH owned + member workspaces
+  fluxNexusHandler.query(
+    `
+    SELECT DISTINCT w.id 
+    FROM workspaces w
+    LEFT JOIN workspace_members wm ON w.id = wm.workspace_id
+    WHERE w.owner_id = ? OR wm.user_id = ?
+    `,
+    [userId, userId],
+    (err, workspaces) => {
+      if (err || !workspaces || workspaces.length === 0) {
+        return res.json({
+          totalTasks: 0,
+          completedTasks: 0,
+          inProgressTasks: 0,
+          overdueTasks: 0,
+          totalProjects: 0,
+          totalWorkspaces: 0,
+          tasksByStatus: [],
+          tasksByPriority: [],
+          weeklyCompletion: [],
+        });
+      }
 
-            fluxNexusHandler.query(
-                `SELECT COUNT(*) as totalTasks,
-                    SUM(CASE WHEN t.status = 'done' THEN 1 ELSE 0 END) as completedTasks,
-                    SUM(CASE WHEN t.status = 'in_progress' THEN 1 ELSE 0 END) as inProgressTasks,
-                    SUM(CASE WHEN t.due_date < NOW() AND t.status != 'done' THEN 1 ELSE 0 END) as overdueTasks
-                 FROM tasks t JOIN projects p ON t.project_id = p.id WHERE p.workspace_id IN (${placeholders})`,
+      const wsIds = workspaces.map((w) => w.id);
+      const placeholders = wsIds.map(() => "?").join(",");
+
+      // MAIN TASK STATS
+      fluxNexusHandler.query(
+        `
+        SELECT 
+          COUNT(*) as totalTasks,
+          SUM(CASE WHEN t.status = 'done' THEN 1 ELSE 0 END) as completedTasks,
+          SUM(CASE WHEN t.status = 'in_progress' THEN 1 ELSE 0 END) as inProgressTasks,
+          SUM(CASE WHEN t.due_date < NOW() AND t.status != 'done' THEN 1 ELSE 0 END) as overdueTasks
+        FROM tasks t
+        JOIN projects p ON t.project_id = p.id
+        WHERE p.workspace_id IN (${placeholders})
+        `,
+        wsIds,
+        (err2, stats) => {
+          if (err2) return res.status(500).json({ error: "DB error (tasks stats)" });
+
+          // PROJECT COUNT
+          fluxNexusHandler.query(
+            `
+            SELECT COUNT(*) as totalProjects 
+            FROM projects 
+            WHERE workspace_id IN (${placeholders})
+            `,
+            wsIds,
+            (err3, projStats) => {
+              if (err3) return res.status(500).json({ error: "DB error (projects stats)" });
+
+              // TASKS BY STATUS
+              fluxNexusHandler.query(
+                `
+                SELECT t.status, COUNT(*) as count
+                FROM tasks t
+                JOIN projects p ON t.project_id = p.id
+                WHERE p.workspace_id IN (${placeholders})
+                GROUP BY t.status
+                `,
                 wsIds,
-                (err2, stats) => {
-                    fluxNexusHandler.query(
-                        `SELECT COUNT(*) as totalProjects FROM projects WHERE workspace_id IN (${placeholders})`,
+                (err4, byStatusRaw) => {
+                  if (err4) return res.status(500).json({ error: "DB error (status stats)" });
+
+                  // normalize status values for frontend charts
+                  const statusMap = {
+                    todo: "TODO",
+                    in_progress: "IN_PROGRESS",
+                    done: "COMPLETED",
+                  };
+
+                  const byStatus = (byStatusRaw || []).map((row) => ({
+                    status: statusMap[row.status] || row.status?.toUpperCase(),
+                    count: row.count,
+                  }));
+
+                  // TASKS BY PRIORITY
+                  fluxNexusHandler.query(
+                    `
+                    SELECT t.priority, COUNT(*) as count
+                    FROM tasks t
+                    JOIN projects p ON t.project_id = p.id
+                    WHERE p.workspace_id IN (${placeholders})
+                    GROUP BY t.priority
+                    `,
+                    wsIds,
+                    (err5, byPriority) => {
+                      if (err5) return res.status(500).json({ error: "DB error (priority stats)" });
+
+                      // WEEKLY COMPLETION (last 6 weeks)
+                      fluxNexusHandler.query(
+                        `
+                        SELECT 
+                          DATE_FORMAT(t.updated_at, '%Y-%u') as weekKey,
+                          CONCAT('Week ', DATE_FORMAT(t.updated_at, '%u')) as week,
+                          COUNT(*) as completed
+                        FROM tasks t
+                        JOIN projects p ON t.project_id = p.id
+                        WHERE p.workspace_id IN (${placeholders})
+                          AND t.status = 'done'
+                          AND t.updated_at >= DATE_SUB(NOW(), INTERVAL 6 WEEK)
+                        GROUP BY weekKey, week
+                        ORDER BY weekKey ASC
+                        `,
                         wsIds,
-                        (err3, projStats) => {
-                            fluxNexusHandler.query(
-                                `SELECT t.status, COUNT(*) as count FROM tasks t JOIN projects p ON t.project_id = p.id WHERE p.workspace_id IN (${placeholders}) GROUP BY t.status`,
-                                wsIds,
-                                (err4, byStatus) => {
-                                    fluxNexusHandler.query(
-                                        `SELECT t.priority, COUNT(*) as count FROM tasks t JOIN projects p ON t.project_id = p.id WHERE p.workspace_id IN (${placeholders}) GROUP BY t.priority`,
-                                        wsIds,
-                                        (err5, byPriority) => {
-                                            res.json({
-                                                totalTasks: stats[0]?.totalTasks || 0,
-                                                completedTasks: stats[0]?.completedTasks || 0,
-                                                inProgressTasks: stats[0]?.inProgressTasks || 0,
-                                                overdueTasks: stats[0]?.overdueTasks || 0,
-                                                totalProjects: projStats[0]?.totalProjects || 0,
-                                                totalWorkspaces: wsIds.length,
-                                                recentActivity: [],
-                                                tasksByStatus: byStatus || [],
-                                                tasksByPriority: byPriority || [],
-                                            });
-                                        }
-                                    );
-                                }
-                            );
+                        (err6, weeklyCompletion) => {
+                          if (err6) return res.status(500).json({ error: "DB error (weekly completion)" });
+
+                          res.json({
+                            totalTasks: stats[0]?.totalTasks || 0,
+                            completedTasks: stats[0]?.completedTasks || 0,
+                            inProgressTasks: stats[0]?.inProgressTasks || 0,
+                            overdueTasks: stats[0]?.overdueTasks || 0,
+                            totalProjects: projStats[0]?.totalProjects || 0,
+                            totalWorkspaces: wsIds.length,
+                            tasksByStatus: byStatus || [],
+                            tasksByPriority: byPriority || [],
+                            weeklyCompletion: weeklyCompletion || [],
+                          });
                         }
-                    );
+                      );
+                    }
+                  );
                 }
-            );
+              );
+            }
+          );
         }
-    );
+      );
+    }
+  );
 });
 
 function verifyToken(req, res, next) {
