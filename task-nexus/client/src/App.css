@@ -1317,3 +1317,324 @@ select {
     cursor: pointer;
     color: inherit;
 }
+
+/* ========================================================
+   LANDING PAGE
+   ======================================================== */
+.landing-page {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: hsl(var(--text));
+    background-color: hsl(var(--bg));
+    min-height: 100vh;
+}
+
+/* ========================================================
+   NAVIGATION
+   ======================================================== */
+.landing-nav {
+    width: 100%;
+    padding: 1rem 0;
+    background: transparent;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 100;
+}
+
+.landing-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.nav-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: hsl(var(--text));
+}
+
+.nav-actions a {
+    margin-left: 0.75rem;
+    text-decoration: none;
+}
+
+.btn-link {
+    color: hsl(var(--text));
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-link:hover {
+    color: hsl(var(--primary));
+}
+
+.btn-primary {
+    background: hsl(var(--primary));
+    color: white;
+    padding: 0.6rem 1.25rem;
+    border-radius: var(--radius);
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    background: hsl(var(--primary-hover));
+}
+.hero-section {
+    padding: 8rem 0 6rem;
+    text-align: center;
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: hsl(var(--primary));
+    margin-bottom: 1rem;
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+}
+
+.gradient-text {
+    background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--purple)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+    font-size: 1.05rem;
+    color: hsl(var(--text-muted));
+    max-width: 650px;
+    margin: 0 auto 2rem;
+}
+
+.hero-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.btn-hero-primary,
+.btn-hero-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.25rem;
+    border-radius: var(--radius);
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.btn-hero-primary {
+    background: hsl(var(--primary));
+    color: white;
+}
+
+.btn-hero-primary:hover {
+    background: hsl(var(--primary-hover));
+}
+
+.btn-hero-secondary {
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    color: hsl(var(--text-muted));
+}
+
+.btn-hero-secondary:hover {
+    background: var(--glass-hover);
+    color: hsl(var(--text));
+}
+
+/* HERO STATS */
+.hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.stat-label {
+    color: hsl(var(--text-muted));
+    font-size: 0.85rem;
+}
+
+/* ========================================================
+   FEATURES SECTION
+   ======================================================== */
+.features-section {
+    padding: 6rem 0;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.section-subtitle {
+    color: hsl(var(--text-muted));
+    font-size: 1rem;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.feature-card {
+    background: var(--glass);
+    border-radius: var(--radius-xl);
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(20px);
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(var(--primary-rgb), 0.15);
+}
+
+.feature-icon {
+    margin-bottom: 1rem;
+    color: hsl(var(--primary));
+}
+
+.feature-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.feature-description {
+    color: hsl(var(--text-muted));
+    font-size: 0.9rem;
+}
+
+/* ========================================================
+   CTA SECTION
+   ======================================================== */
+.cta-section {
+    padding: 6rem 0;
+    text-align: center;
+    background: hsla(var(--primary), 0.05);
+}
+
+.cta-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.cta-subtitle {
+    color: hsl(var(--text-muted));
+    margin-bottom: 1.5rem;
+}
+
+.btn-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: hsl(var(--primary));
+    color: white;
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.btn-cta:hover {
+    background: hsl(var(--primary-hover));
+}
+
+/* ========================================================
+   FOOTER
+   ======================================================== */
+.landing-footer {
+    padding: 3rem 0;
+    text-align: center;
+    border-top: 1px solid var(--glass-border);
+    margin-top: 4rem;
+}
+
+.footer-brand {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.footer-text {
+    font-size: 0.85rem;
+    color: hsl(var(--text-muted));
+}
+
+/* ========================================================
+   RESPONSIVE
+   ======================================================== */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.25rem;
+    }
+
+    .hero-subtitle {
+        font-size: 0.95rem;
+    }
+
+    .hero-actions {
+        flex-direction: column;
+    }
+
+    .hero-stats {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cta-title {
+        font-size: 1.75rem;
+    }
+}

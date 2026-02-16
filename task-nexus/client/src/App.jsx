@@ -20,6 +20,7 @@ import Tasks from "./pages/Tasks";
 
 import "./App.css";
 import WorkspaceSettings from "./pages/WorkspaceSettings";
+import Landing from "./pages/Landing";
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -155,6 +156,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Public Routes */}
+        <Route path="/welcome" element={<Landing />} />
+
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
