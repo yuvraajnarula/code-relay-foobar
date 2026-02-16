@@ -215,3 +215,4 @@ Auth header centralized
 Token is consistently sent as Authorization: Bearer <token>.
 
 That’s basically the set of fixes needed for auth to work reliably (especially after refresh).
+>e.preventDefault in login.tsx

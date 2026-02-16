@@ -5,6 +5,7 @@ const mysql = require('mysql2');
 
 const jwt = require('jsonwebtoken');
 
+const bcrypt = require("bcrypt");
 
 const app = express();
 app.use(express.json());
@@ -31,65 +32,102 @@ fluxNexusHandler.connect((err) => {
 app.post('/api/auth/register', (req, res) => {
     const { username, email, password } = req.body;
 
-    const query = "INSERT INTO users (username, email, password_hash) VALUES ('" + username + "', '" + email + "', '" + password + "')";
+  try {
+    // check if user exists
+    fluxNexusHandler.query(
+      "SELECT id FROM users WHERE email = ?",
+      [email],
+      async (err, existing) => {
+        if (err) return res.status(500).json({ error: err.message });
 
-    fluxNexusHandler.query(query, (err, results) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
+        if (existing.length > 0) {
+          return res.status(400).json({ error: "Email already registered" });
         }
 
-        const wsQuery = "INSERT INTO workspaces (name, description, owner_id) VALUES ('" + username + " Workspace', 'Default workspace', " + results.insertId + ")";
-        fluxNexusHandler.query(wsQuery, (err2, wsResults) => {
-            if (wsResults) {
-                fluxNexusHandler.query(
-                    "INSERT INTO workspace_members (workspace_id, user_id, role) VALUES (" + wsResults.insertId + ", " + results.insertId + ", 'owner')"
+        // hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // insert user safely
+        fluxNexusHandler.query(
+          "INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)",
+          [username, email, hashedPassword],
+          (err2, results) => {
+            if (err2) return res.status(500).json({ error: err2.message });
+
+            const userId = results.insertId;
+
+            // create default workspace + project
+            fluxNexusHandler.query(
+              "INSERT INTO workspaces (name, description, owner_id) VALUES (?, ?, ?)",
+              [`${username} Workspace`, "Default workspace", userId],
+              (err3, wsResults) => {
+                if (!err3 && wsResults) {
+                  fluxNexusHandler.query(
+                    "INSERT INTO workspace_members (workspace_id, user_id, role) VALUES (?, ?, ?)",
+                    [wsResults.insertId, userId, "owner"]
+                  );
+
+                  fluxNexusHandler.query(
+                    "INSERT INTO projects (name, description, workspace_id) VALUES (?, ?, ?)",
+                    ["My First Project", "Default project", wsResults.insertId]
+                  );
+                }
+
+                const token = jwt.sign(
+                  { id: userId, username, email },
+                  JWT_SECRET,
+                  { expiresIn: "7d" }
                 );
 
-                fluxNexusHandler.query(
-                    "INSERT INTO projects (name, description, workspace_id) VALUES ('My First Project', 'Default project', " + wsResults.insertId + ")"
-                );
-            }
-
-            const token = jwt.sign(
-                { id: results.insertId, username, email },
-                JWT_SECRET
+                return res.json({
+                  token,
+                  user: { id: userId, username, email },
+                });
+              }
             );
-
-            res.json({ token, user: { id: results.insertId, username, email } });
-        });
-    });
+          }
+        );
+      }
+    );
+  } catch (e) {
+    return res.status(500).json({ error: "Server error" });
+  }
 });
 
 app.post('/api/auth/login', (req, res) => {
     const { email, password } = req.body;
 
-    const query = "SELECT * FROM users WHERE email = '" + email + "'";
+  fluxNexusHandler.query(
+    "SELECT * FROM users WHERE email = ?",
+    [email],
+    async (err, results) => {
+      if (err) return res.status(500).json({ error: err.message });
 
-    fluxNexusHandler.query(query, (err, results) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
+      if (results.length === 0) {
+        return res.status(401).json({ error: "No account found with this email" });
+      }
 
-        if (results.length === 0) {
-            return res.status(401).json({ error: 'No account found with this email' });
-        }
+      const user = results[0];
 
-        var user = results[0];
+      const isMatch = await bcrypt.compare(password, user.password_hash);
 
-        if (user.password_hash !== password) {
-            return res.status(401).json({ error: 'Wrong password' });
-        }
+      if (!isMatch) {
+        return res.status(401).json({ error: "Wrong password" });
+      }
 
-        const token = jwt.sign(
-            { id: user.id, username: user.username, email: user.email },
-            JWT_SECRET
-        );
+      const token = jwt.sign(
+        { id: user.id, username: user.username, email: user.email },
+        JWT_SECRET,
+        { expiresIn: "7d" }
+      );
 
-        res.json({
-            token,
-            user: { id: user.id, username: user.username, email: user.email }
-        });
-    });
+      res.json({
+        token,
+        user: { id: user.id, username: user.username, email: user.email },
+      });
+    }
+  );
+
 });
 
 app.get('/api/auth/me', (req, res) => {
