@@ -1,11 +1,13 @@
 import React from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../modules/context/AuthContext";
-import { LayoutDashboard, Building2, LogOut, User } from "lucide-react";
+import { useTheme } from "../modules/context/ThemeContext";
+import { LayoutDashboard, Building2, LogOut, User, Moon, Sun } from "lucide-react";
 import NotificationBell from "./UI/NotificaitonBells";
 
 export default function Layout() {
   const { user, logout } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -57,6 +59,18 @@ export default function Layout() {
             </div>
           </div>
 
+          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+            <button 
+              onClick={toggleTheme} 
+              className="nav-link theme-toggle"
+              aria-label="Toggle theme"
+              title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {isDark ? <Sun size={20} /> : <Moon size={20} />}
+              <span>{isDark ? "Light" : "Dark"}</span>
+            </button>
+          </div>
+
           <button className="btn-ghost logout-btn" onClick={handleLogout}>
             <LogOut size={18} />
             <span>Logout</span>
@@ -70,6 +84,14 @@ export default function Layout() {
           <div></div>
 
           <div className="topbar-actions">
+            <button 
+              onClick={toggleTheme} 
+              className="btn-icon theme-toggle-mobile"
+              aria-label="Toggle theme"
+              title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {isDark ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
             <NotificationBell />
           </div>
         </div>

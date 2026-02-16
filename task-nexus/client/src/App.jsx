@@ -21,6 +21,7 @@ import Tasks from "./pages/Tasks";
 import "./App.css";
 import WorkspaceSettings from "./pages/WorkspaceSettings";
 import Landing from "./pages/Landing";
+import { ThemeProvider } from "./modules/context/ThemeContext";
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -152,45 +153,48 @@ function LegacyTaskApp() {
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Public Routes */}
-        <Route path="/welcome" element={<Landing />} />
+    <ThemeProvider>
 
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/welcome" element={<Landing />} />
 
-          {/* Protected Routes */}
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <LayoutComponent />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<Dashboard />} />
-            <Route path="workspaces" element={<Workspaces />} />
-            <Route path="workspaces/:workspaceId" element={<Projects />} />
-            <Route path="projects/:projectId" element={<Tasks />} />
-            <Route path="workspaces/:workspaceId/settings" element={<WorkspaceSettings />} />
-          </Route>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
-          <Route
-            path="/legacy"
-            element={
-              <ProtectedRoute>
-                <LegacyTaskApp />
-              </ProtectedRoute>
-            }
-          />
+            {/* Protected Routes */}
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <LayoutComponent />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Dashboard />} />
+              <Route path="workspaces" element={<Workspaces />} />
+              <Route path="workspaces/:workspaceId" element={<Projects />} />
+              <Route path="projects/:projectId" element={<Tasks />} />
+              <Route path="workspaces/:workspaceId/settings" element={<WorkspaceSettings />} />
+            </Route>
 
-          {/* Catch-all */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+            <Route
+              path="/legacy"
+              element={
+                <ProtectedRoute>
+                  <LegacyTaskApp />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Catch-all */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

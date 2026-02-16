@@ -1,25 +1,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
-:root {
-    /* Light Mode Palette */
+/* Dark Mode (default) */
+:root,
+[data-theme="light"] {
     --primary: 220 100% 50%;
     --primary-hover: 220 100% 45%;
     --primary-rgb: 37, 99, 235;
-    --bg: 210 40% 98%;
-    --bg-secondary: 210 40% 96%;
-    --card: 0 0% 100%;
-    --card-hover: 210 40% 99%;
-    --text: 222 47% 11%;
-    --text-muted: 215 16% 47%;
-    --border: 214 32% 91%;
+
+    --bg: 222 25% 6%;
+    --bg-secondary: 222 25% 8%;
+    --card: 222 25% 10%;
+    --card-hover: 222 25% 12%;
+
+    --text: 210 40% 98%;
+    --text-muted: 215 20% 65%;
+    --border: 222 25% 15%;
+
     --success: 142 76% 36%;
     --warning: 38 92% 50%;
     --danger: 0 84% 60%;
     --purple: 258 90% 66%;
     --cyan: 188 95% 40%;
-    --glass: rgba(255, 255, 255, 0.707);
-    --glass-border: rgba(0, 0, 0, 0.08);
-    --glass-hover: rgba(0, 0, 0, 0.04);
+
+    --glass: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-hover: rgba(255, 255, 255, 0.08);
 
     --sidebar-width: 260px;
     --radius: 0.75rem;
@@ -31,6 +35,43 @@
     color: hsl(var(--text));
     background-color: hsl(var(--bg));
 }
+
+/* Light Mode */
+[data-theme="dark"] {
+    --primary: 220 100% 50%;
+    --primary-hover: 220 100% 45%;
+    --primary-rgb: 37, 99, 235;
+
+    --bg: 210 40% 98%;
+    --bg-secondary: 210 40% 96%;
+    --card: 0 0% 100%;
+    --card-hover: 210 40% 99%;
+
+    --text: 222 47% 11%;
+    --text-muted: 215 16% 47%;
+    --border: 214 32% 91%;
+
+    --success: 142 76% 36%;
+    --warning: 38 92% 50%;
+    --danger: 0 84% 60%;
+    --purple: 258 90% 66%;
+    --cyan: 188 95% 40%;
+
+    --glass: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(0, 0, 0, 0.08);
+    --glass-hover: rgba(0, 0, 0, 0.04);
+}
+
+.theme-toggle {
+    padding: 0.5rem;
+    border-radius: var(--radius);
+    transition: all 0.2s ease;
+}
+
+.theme-toggle:hover {
+    background: var(--glass-hover);
+}
+
 
 * {
     box-sizing: border-box;
