@@ -413,6 +413,132 @@ app.get('/api/analytics/dashboard', (req, res) => {
     );
 });
 
+function verifyToken(req, res, next) {
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.split(" ")[1];
+
+  if (!token) return res.status(401).json({ error: "No token provided" });
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.status(401).json({ error: "Invalid token" });
+  }
+}
+
+
+app.get("/api/workspaces/:workspaceId/members", verifyToken, (req, res) => {
+  const { workspaceId } = req.params;
+
+  const query = `
+    SELECT u.id, u.username AS name, u.email, wm.role
+    FROM workspace_members wm
+    JOIN users u ON wm.user_id = u.id
+    WHERE wm.workspace_id = ?
+    ORDER BY wm.joined_at ASC
+  `;
+
+  req.db.query(query, [workspaceId], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
+});
+
+// =============================
+// INVITE USER TO WORKSPACE
+// =============================
+app.post("/api/workspaces/:workspaceId/invite", verifyToken, (req, res) => {
+  const { workspaceId } = req.params;
+  const { email } = req.body;
+
+  if (!email || !email.trim()) {
+    return res.status(400).json({ error: "Email is required" });
+  }
+
+  const checkRoleQuery = `
+    SELECT role 
+    FROM workspace_members
+    WHERE workspace_id = ? AND user_id = ?
+  `;
+
+  req.db.query(checkRoleQuery, [workspaceId, req.user.id], (err, roleResults) => {
+    if (err) return res.status(500).json({ error: err.message });
+
+    if (roleResults.length === 0) {
+      return res.status(403).json({ error: "You are not part of this workspace" });
+    }
+
+    const inviterRole = roleResults[0].role;
+
+    if (inviterRole !== "owner" && inviterRole !== "admin") {
+      return res.status(403).json({ error: "Only owner/admin can invite members" });
+    }
+
+    // Step 2: Find user by email
+    const findUserQuery = `SELECT id, username, email FROM users WHERE email = ?`;
+
+    req.db.query(findUserQuery, [email], (err, userResults) => {
+      if (err) return res.status(500).json({ error: err.message });
+
+      if (userResults.length === 0) {
+        return res.status(404).json({ error: "User not found with this email" });
+      }
+
+      const invitedUser = userResults[0];
+
+      const addMemberQuery = `
+        INSERT INTO workspace_members (workspace_id, user_id, role)
+        VALUES (?, ?, 'member')
+      `;
+
+      req.db.query(addMemberQuery, [workspaceId, invitedUser.id], (err) => {
+        if (err && err.code === "ER_DUP_ENTRY") {
+          return res.status(400).json({ error: "User already exists in workspace" });
+        }
+
+        if (err) return res.status(500).json({ error: err.message });
+
+        // Step 4: Create notification for invited user
+        const notifQuery = `
+          INSERT INTO notifications (user_id, type, title, message, meta)
+          VALUES (?, ?, ?, ?, ?)
+        `;
+
+        const meta = JSON.stringify({ workspaceId });
+
+        req.db.query(
+          notifQuery,
+          [
+            invitedUser.id,
+            "workspace_invite",
+            "Workspace Invitation",
+            `You were added to a workspace.`,
+            meta,
+          ],
+          (notifErr) => {
+            if (notifErr) console.error("Notification insert error:", notifErr);
+
+            return res.json({
+              success: true,
+              message: "Member invited successfully.",
+              invitedUser: {
+                id: invitedUser.id,
+                username: invitedUser.username,
+                email: invitedUser.email,
+                role: "member",
+              },
+            });
+          }
+        );
+      });
+    });
+  });
+});
+
+
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Nexus stability layer active on port ${PORT}`);

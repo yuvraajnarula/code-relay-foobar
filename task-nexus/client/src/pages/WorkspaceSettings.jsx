@@ -23,13 +23,17 @@ export default function WorkspaceSettings() {
   const fetchMembers = async () => {
     try {
       setLoadingMembers(true);
-      const res = await axios.get(`${API_BASE}/workspaces/${workspaceId}/members`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+
+      const res = await axios.get(
+        `${API_BASE}/workspaces/${workspaceId}/members`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       setMembers(res.data);
     } catch (err) {
-      console.error(err);
+      console.error("Fetch Members Error:", err);
     } finally {
       setLoadingMembers(false);
     }
@@ -46,6 +50,15 @@ export default function WorkspaceSettings() {
 
     if (!inviteEmail.trim()) return;
 
+    const alreadyExists = members.some(
+      (m) => m.email.toLowerCase() === inviteEmail.toLowerCase()
+    );
+
+    if (alreadyExists) {
+      setInviteError("User already exists in this workspace.");
+      return;
+    }
+
     try {
       setInviteLoading(true);
 
@@ -57,9 +70,20 @@ export default function WorkspaceSettings() {
 
       setInviteSuccess(res.data.message || "Invitation sent successfully.");
       setInviteEmail("");
-      fetchMembers();
+
+      if (res.data.invitedUser) {
+        setMembers((prev) => [
+          ...prev,
+          {
+            id: res.data.invitedUser.id,
+            name: res.data.invitedUser.username || "Unnamed",
+            email: res.data.invitedUser.email,
+            role: res.data.invitedUser.role || "member",
+          },
+        ]);
+      }
     } catch (err) {
-      console.error(err);
+      console.error("Invite Error:", err);
 
       const msg =
         err?.response?.data?.error ||
@@ -108,7 +132,11 @@ export default function WorkspaceSettings() {
               />
             </div>
 
-            <button className="btn-primary" type="submit" disabled={inviteLoading}>
+            <button
+              className="btn-primary"
+              type="submit"
+              disabled={inviteLoading}
+            >
               <UserPlus size={18} />
               {inviteLoading ? "Inviting..." : "Invite"}
             </button>
@@ -122,9 +150,7 @@ export default function WorkspaceSettings() {
           )}
 
           {inviteSuccess && (
-            <div className="alert alert-success">
-              {inviteSuccess}
-            </div>
+            <div className="alert alert-success">{inviteSuccess}</div>
           )}
 
           <hr style={{ margin: "1.5rem 0", opacity: 0.2 }} />
