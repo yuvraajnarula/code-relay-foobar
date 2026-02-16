@@ -1,0 +1,217 @@
+(base) PS D:\code\colleg\foobar\code-relay-foobar\task-nexus\client> npm run dev
+
+> task-nexus-client@0.0.0 dev
+> vite
+
+
+  VITE v4.5.14  ready in 531 ms
+
+  ➜  Local:   http://localhost:3000/
+  ➜  Network: use --host to expose
+  ➜  press h to show help
+Error:   Failed to scan for dependencies from entries:
+  D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/index.html
+
+  ✘ [ERROR] No matching export in "src/pages/Login.jsx" for import "default"
+
+    src/App.jsx:11:7:
+      11 │ import Login from './pages/Login';
+         ╵        ~~~~~
+
+
+    at failureErrorWithLog (D:\code\colleg\foobar\code-relay-foobar\task-nexus\client\node_modules\esbuild\lib\main.js:1649:15)
+    at D:\code\colleg\foobar\code-relay-foobar\task-nexus\client\node_modules\esbuild\lib\main.js:1058:25
+    at runOnEndCallbacks (D:\code\colleg\foobar\code-relay-foobar\task-nexus\client\node_modules\esbuild\lib\main.js:1484:45)
+    at buildResponseToResult (D:\code\colleg\foobar\code-relay-foobar\task-nexus\client\node_modules\esbuild\lib\main.js:1056:7)
+    at D:\code\colleg\foobar\code-relay-foobar\task-nexus\client\node_modules\esbuild\lib\main.js:1068:9
+    at new Promise (<anonymous>)
+    at requestCallbacks.on-end (D:\code\colleg\foobar\code-relay-foobar\task-nexus\client\node_modules\esbuild\lib\main.js:1067:54)
+    at handleRequest (D:\code\colleg\foobar\code-relay-foobar\task-nexus\client\node_modules\esbuild\lib\main.js:729:19)
+    at handleIncomingPacket (D:\code\colleg\foobar\code-relay-foobar\task-nexus\client\node_modules\esbuild\lib\main.js:755:7)
+    at Socket.readFromStdout (D:\code\colleg\foobar\code-relay-foobar\task-nexus\client\node_modules\esbuild\lib\main.js:679:7)
+
+
+[plugin:vite:import-analysis] Failed to resolve import "./modules/TaskComponents/TaskLits" from "src\App.jsx". Does the file exist?
+D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/src/App.jsx:5:21
+20 |  import axios from "axios";
+21 |  import { Plus, Layout as LayoutIcon } from "lucide-react";
+22 |  import TaskList from "./modules/TaskComponents/TaskLits";
+   |                        ^
+23 |  import Card from "./modules/UI/Card";
+24 |  import Input from "./modules/UI/Input";
+    at formatError (file:///D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44066:46)
+    at TransformContext.error (file:///D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44062:19)
+    at normalizeUrl (file:///D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41845:33)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async file:///D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41999:47
+    at async Promise.all (index 7)
+    at async TransformContext.transform (file:///D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41915:13)
+    at async Object.transform (file:///D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44356:30)
+    at async loadAndTransform (file:///D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:55088:29)
+    at async viteTransformMiddleware (file:///D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:64699:32
+Click outside, press Esc key, or fix the code to dismiss.
+
+[plugin:vite:import-analysis] Failed to resolve import "react-router-dom" from "src\App.jsx". Does the file exist?
+D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/src/App.jsx:2:55
+17 |  var _s = $RefreshSig$(), _s2 = $RefreshSig$();
+18 |  import React, { useState, useEffect, useCallback } from "react";
+19 |  import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+   |                                                          ^
+20 |  import axios from "axios";
+21 |  import { Plus, Layout as LayoutIcon } from "lucide-react";
+    at formatError (file:///D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44066:46)
+    at TransformContext.error (file:///D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44062:19)
+    at normalizeUrl (file:///D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41845:33)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async file:///D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41999:47
+    at async Promise.all (index 4)
+    at async TransformContext.transform (file:///D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41915:13)
+    at async Object.transform (file:///D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44356:30)
+    at async loadAndTransform (file:///D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:55088:29)
+    at async viteTransformMiddleware (file:///D:/code/colleg/foobar/code-relay-foobar/task-nexus/   
+
+
+
+Run `npm audit` for details.
+(base) PS D:\code\colleg\foobar\code-relay-foobar\task-nexus\client> npm run dev
+
+> task-nexus-client@0.0.0 dev
+> vite
+
+
+  VITE v4.5.14  ready in 605 ms
+
+  ➜  Local:   http://localhost:3000/
+  ➜  Network: use --host to expose
+  ➜  press h to show help
+Error:   Failed to scan for dependencies from entries:
+  D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/index.html
+
+  ✘ [ERROR] Unterminated regular expression
+
+    src/modules/TaskComponents/TaskItem.jsx:24:19:
+      24 │             </span>
+         ╵                    ^
+
+
+    at failureErrorWithLog (D:\code\colleg\foobar\code-relay-foobar\task-nexus\client\node_modules\esbuild\lib\main.js:1649:15)
+    at D:\code\colleg\foobar\code-relay-foobar\task-nexus\client\node_modules\esbuild\lib\main.js:1058:25
+    at runOnEndCallbacks (D:\code\colleg\foobar\code-relay-foobar\task-nexus\client\node_modules\esbuild\lib\main.js:1484:45)
+    at buildResponseToResult (D:\code\colleg\foobar\code-relay-foobar\task-nexus\client\node_modules\esbuild\lib\main.js:1056:7)
+    at D:\code\colleg\foobar\code-relay-foobar\task-nexus\client\node_modules\esbuild\lib\main.js:1068:9
+    at new Promise (<anonymous>)
+    at requestCallbacks.on-end (D:\code\colleg\foobar\code-relay-foobar\task-nexus\client\node_modules\esbuild\lib\main.js:1067:54)
+    at handleRequest (D:\code\colleg\foobar\code-relay-foobar\task-nexus\client\node_modules\esbuild\lib\main.js:729:19)
+    at handleIncomingPacket (D:\code\colleg\foobar\code-relay-foobar\task-nexus\client\node_modules\esbuild\lib\main.js:755:7)
+    at Socket.readFromStdout (D:\code\colleg\foobar\code-relay-foobar\task-nexus\client\node_modules\esbuild\lib\main.js:679:7)
+
+
+
+
+
+
+
+22 |  import TaskList from "./modules/TaskComponents/TaskList";
+      at formatError (file:///D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44066:46)
+      at TransformContext.error (file:///D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44062:19)
+      at normalizeUrl (file:///D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41845:33)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async file:///D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41999:47
+      at async Promise.all (index 5)
+      at async TransformContext.transform (file:///D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:41915:13)
+      at async Object.transform (file:///D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:44356:30)
+      at async loadAndTransform (file:///D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:55088:29)
+      at async viteTransformMiddleware (file:///D:/code/colleg/foobar/code-relay-foobar/task-nexus/client/node_modules/vite/dist/node/chunks/dep-827b23df.js:64699:32)
+Failed to resolve import "axios" from "src\pages\Dashboard.jsx". Does the file exist?
+Failed to resolve import "axios" from "src\modules\context\AuthContext.jsx". Does the file exist?
+Failed to resolve import "axios" from "src\pages\Workspaces.jsx". Does the file exist?
+Failed to resolve import "axios" from "src\pages\Projects.jsx". Does the file exist?
+Failed to resolve import "axios" from "src\pages\Tasks.jsx". Does the file exist?
+
+Failed to load resource: the server responded with a status of 404 (Not Found)Understand this error
+4Tasks.jsx:73 TypeError: Cannot read properties of undefined (reading 'map')
+    at Tasks.jsx:69:28
+(anonymous) @ Tasks.jsx:73
+
+
+Updated fixed code blocks
+State fix:
+const [tasks, setTasks] = useState([]);
+handleStatusChange fix:
+const handleStatusChange = useCallback(async (taskId, newStatus) => {
+  const token = localStorage.getItem("nexus_token");
+
+  try {
+    await axios.put(
+      `${API_BASE}/tasks/${taskId}`,
+      {
+        status: newStatus,
+        completed: newStatus === "done",
+      },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    setTasks(prev =>
+      prev.map(t =>
+        t.id === taskId
+          ? { ...t, status: newStatus, completed: newStatus === "done" }
+          : t
+      )
+    );
+  } catch (err) {
+    console.error(err);
+  }
+}, []);
+
+Bugs in  code AuthContext
+
+Vite env variable is wrong
+
+import.meta.env.API_URL
+
+should be:
+
+import.meta.env.VITE_API_URL
+
+You set user incorrectly
+
+setUser(response);
+
+should be:
+
+setUser(response.data);
+
+Logout removes wrong key
+You store token as nexus_token but remove token.
+
+> routing redirection to login fixed with auth context 
+
+Redirects properly to /login if not authenticated
+Redirects properly to /login if not authenticated
+Fixed wrong API_BASE env usage
+import.meta.env.API_URL → should be import.meta.env.VITE_API_URL (Vite only exposes vars starting with VITE_)
+
+Removed hardcoded URLs
+Replaced http://localhost:5000/api/... with ${API_BASE}/... everywhere for consistency.
+
+Fixed /auth/me response handling
+You were doing setUser(response) (wrong)
+Now it correctly does setUser(response.data.user) (or response.data depending on backend format).
+
+Fixed logout token key mismatch
+You were removing localStorage.removeItem('token')
+Now it removes localStorage.removeItem('nexus_token')
+
+Auto logout on invalid/expired token
+If /auth/me fails, it now clears token + user instead of leaving stale token.
+
+Better loading handling
+Ensures loading becomes false in all cases (token exists / token missing / API fails).
+
+Better error propagation
+login() and register() now throw proper axios errors so Login/Register pages can show correct error messages.
+
+Auth header centralized
+Token is consistently sent as Authorization: Bearer <token>.
+
+That’s basically the set of fixes needed for auth to work reliably (especially after refresh).

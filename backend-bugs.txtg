@@ -1,0 +1,9 @@
+libs not mentioned in package.json
+> jsonwebtoken
+>mysql2
+> nodemon
+
+Access to XMLHttpRequest at 'http://localhost:5000/api/auth/register' from origin 'http://localhost:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.Understand this error
+:5000/api/auth/register:1  Failed to load resource: net::ERR_FAILEDUnderstand this error
+
+const JWT_SECRET = 'super-secret-key-123';
