@@ -1134,3 +1134,89 @@ select {
         flex-direction: column;
     }
 }
+
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.tab-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: inherit;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.tab-btn.active {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.35);
+}
+
+.settings-panel {
+  padding: 1.5rem;
+}
+
+.invite-form {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.input-with-icon {
+  flex: 1;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.input-with-icon input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: inherit;
+}
+
+.member-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.member-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.alert {
+  margin-top: 1rem;
+  padding: 12px;
+  border-radius: 10px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.alert-error {
+  background: rgba(255,0,0,0.12);
+  border: 1px solid rgba(255,0,0,0.2);
+}
+
+.alert-success {
+  background: rgba(0,255,0,0.12);
+  border: 1px solid rgba(0,255,0,0.2);
+}

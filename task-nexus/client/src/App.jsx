@@ -19,6 +19,7 @@ import Projects from "./pages/Projects";
 import Tasks from "./pages/Tasks";
 
 import "./App.css";
+import WorkspaceSettings from "./pages/WorkspaceSettings";
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -170,6 +171,7 @@ function App() {
             <Route path="workspaces" element={<Workspaces />} />
             <Route path="workspaces/:workspaceId" element={<Projects />} />
             <Route path="projects/:projectId" element={<Tasks />} />
+            <Route path="workspaces/:workspaceId/settings" element={<WorkspaceSettings />} />
           </Route>
 
           <Route

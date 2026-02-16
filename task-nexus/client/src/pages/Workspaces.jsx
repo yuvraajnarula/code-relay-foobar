@@ -6,7 +6,7 @@ import { Building2, Plus, Users, Trash2, ChevronRight } from 'lucide-react';
 const API_BASE = 'http://localhost:5000/api';
 
 export default function Workspaces() {
-    const [workspaces, setWorkspaces] = useState();
+    const [workspaces, setWorkspaces] = useState([]);
     const [showForm, setShowForm] = useState(false);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
@@ -21,6 +21,7 @@ export default function Workspaces() {
             .then(response => setWorkspaces(response.data))
             .catch(console.error)
             .finally(() => setLoading(false));
+
     }, []);
 
     const handleCreate = async (e) => {
@@ -64,9 +65,12 @@ export default function Workspaces() {
                     <h2>Workspaces</h2>
                     <p className="text-muted">Organize your team projects</p>
                 </div>
+                <div>
                 <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
-                    <Plus size={18} /> New Workspace
-                </button>
+                        <Plus size={18} /> New Workspace
+                    </button>
+                </div>
+
             </div>
 
             {showForm && (
