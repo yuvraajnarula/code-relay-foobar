@@ -440,7 +440,7 @@ app.get("/api/workspaces/:workspaceId/members", verifyToken, (req, res) => {
     ORDER BY wm.joined_at ASC
   `;
 
-  req.db.query(query, [workspaceId], (err, results) => {
+  fluxNexusHandler.query(query, [workspaceId], (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(results);
   });
@@ -463,7 +463,7 @@ app.post("/api/workspaces/:workspaceId/invite", verifyToken, (req, res) => {
     WHERE workspace_id = ? AND user_id = ?
   `;
 
-  req.db.query(checkRoleQuery, [workspaceId, req.user.id], (err, roleResults) => {
+  fluxNexusHandler.query(checkRoleQuery, [workspaceId, req.user.id], (err, roleResults) => {
     if (err) return res.status(500).json({ error: err.message });
 
     if (roleResults.length === 0) {
@@ -479,7 +479,7 @@ app.post("/api/workspaces/:workspaceId/invite", verifyToken, (req, res) => {
     // Step 2: Find user by email
     const findUserQuery = `SELECT id, username, email FROM users WHERE email = ?`;
 
-    req.db.query(findUserQuery, [email], (err, userResults) => {
+    fluxNexusHandler.query(findUserQuery, [email], (err, userResults) => {
       if (err) return res.status(500).json({ error: err.message });
 
       if (userResults.length === 0) {
@@ -493,7 +493,7 @@ app.post("/api/workspaces/:workspaceId/invite", verifyToken, (req, res) => {
         VALUES (?, ?, 'member')
       `;
 
-      req.db.query(addMemberQuery, [workspaceId, invitedUser.id], (err) => {
+      fluxNexusHandler.query(addMemberQuery, [workspaceId, invitedUser.id], (err) => {
         if (err && err.code === "ER_DUP_ENTRY") {
           return res.status(400).json({ error: "User already exists in workspace" });
         }
@@ -507,7 +507,7 @@ app.post("/api/workspaces/:workspaceId/invite", verifyToken, (req, res) => {
 
         const meta = JSON.stringify({ workspaceId });
 
-        req.db.query(
+        fluxNexusHandler.query(
           notifQuery,
           [
             invitedUser.id,
@@ -545,7 +545,7 @@ app.get("/api/notifications", verifyToken, (req, res) => {
     ORDER BY created_at DESC
   `;
 
-  req.db.query(query, [req.user.id], (err, results) => {
+  fluxNexusHandler.query(query, [req.user.id], (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(results);
   });
@@ -559,7 +559,7 @@ app.get("/api/notifications/unread-count", verifyToken, (req, res) => {
     WHERE user_id = ? AND is_read = 0
   `;
 
-  req.db.query(query, [req.user.id], (err, results) => {
+  fluxNexusHandler.query(query, [req.user.id], (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json({ unread: results[0].unread });
   });
@@ -575,7 +575,7 @@ app.put("/api/notifications/:id/read", verifyToken, (req, res) => {
     WHERE id = ? AND user_id = ?
   `;
 
-  req.db.query(query, [notifId, req.user.id], (err) => {
+  fluxNexusHandler.query(query, [notifId, req.user.id], (err) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json({ success: true });
   });
