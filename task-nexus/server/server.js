@@ -177,10 +177,28 @@ app.get('/api/workspaces', (req, res) => {
 });
 
 app.get('/api/workspaces/:id', (req, res) => {
+    const workspaceId = req.params.id;
+
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ error: "No token" });
+
+    let userId;
+    try {
+        userId = jwt.verify(authHeader.split(" ")[1], JWT_SECRET).id;
+    } catch (e) {
+        return res.status(401).json({ error: "Invalid token" });
+    }
+
     fluxNexusHandler.query(
-        'SELECT * FROM workspaces WHERE id = ?',
-        [req.params.id],
+        `SELECT w.*, wm.role 
+         FROM workspaces w
+         JOIN workspace_members wm ON w.id = wm.workspace_id
+         WHERE w.id = ? AND wm.user_id = ?`,
+        [workspaceId, userId],
         (err, results) => {
+            if (err) return res.status(500).json({ error: err.message });
+            if (results.length === 0) return res.status(403).json({ error: "Access denied" });
+
             res.json(results[0]);
         }
     );

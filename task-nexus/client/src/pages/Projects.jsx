@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { FolderKanban, Plus, Trash2, ChevronRight, ArrowLeft, Users, Settings } from 'lucide-react';
+import { FolderKanban, Plus, Trash2, ArrowLeft, Settings } from 'lucide-react';
 
 const API_BASE = 'http://localhost:5000/api';
 
 export default function Projects() {
     const { workspaceId } = useParams();
     const navigate = useNavigate();
+
     const [workspace, setWorkspace] = useState(null);
     const [projects, setProjects] = useState([]);
     const [showForm, setShowForm] = useState(false);
+
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [color, setColor] = useState('#3B82F6');
+
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -28,18 +31,25 @@ export default function Projects() {
                 setWorkspace(wsRes.data);
                 setProjects(projRes.data);
             })
-            .catch(console.error)
+            .catch((err) => {
+                console.error(err);
+                navigate("/workspaces");
+            })
             .finally(() => setLoading(false));
     }, [workspaceId]);
 
     const handleCreate = async (e) => {
         e.preventDefault();
+
         const token = localStorage.getItem('nexus_token');
 
         try {
-            const response = await axios.post(`${API_BASE}/projects`, { name, description, color, workspaceId: parseInt(workspaceId) }, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await axios.post(
+                `${API_BASE}/projects`,
+                { name, description, color, workspaceId: parseInt(workspaceId) },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
             setProjects([...projects, response.data]);
             setName('');
             setDescription('');
@@ -51,16 +61,27 @@ export default function Projects() {
 
     const handleDelete = async (id) => {
         const token = localStorage.getItem('nexus_token');
+
         try {
-            await axios.delete(`${API_BASE}/projects/${id}`, { headers: { Authorization: `Bearer ${token}` } });
-            setProjects(projects.filter(p => p.id !== id));
+            await axios.delete(`${API_BASE}/projects/${id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            setProjects(projects.filter((p) => p.id !== id));
         } catch (err) {
             console.error(err);
         }
     };
 
+    const canManageWorkspace = workspace?.role === "owner" || workspace?.role === "admin";
+
     if (loading) {
-        return <div className="page-loading"><div className="spinner"></div><p>Loading projects...</p></div>;
+        return (
+            <div className="page-loading">
+                <div className="spinner"></div>
+                <p>Loading projects...</p>
+            </div>
+        );
     }
 
     return (
@@ -72,14 +93,22 @@ export default function Projects() {
                     </button>
                     <h2>{workspace?.name || 'Workspace'}</h2>
                 </div>
-                <div>
 
-                    <button className="btn-primary" onClick={() => navigate(`/workspaces/${workspaceId}/settings`)}>
-                        <Settings size={18} /> Settings
-                    </button>
-                    <button className="btn-primary" style={{
-                        marginLeft: 10
-                    }} onClick={() => setShowForm(!showForm)}>
+                <div>
+                    {canManageWorkspace && (
+                        <button
+                            className="btn-primary"
+                            onClick={() => navigate(`/workspaces/${workspaceId}/settings`)}
+                        >
+                            <Settings size={18} /> Settings
+                        </button>
+                    )}
+
+                    <button
+                        className="btn-primary"
+                        style={{ marginLeft: canManageWorkspace ? 10 : 0 }}
+                        onClick={() => setShowForm(!showForm)}
+                    >
                         <Plus size={18} /> New Project
                     </button>
                 </div>
@@ -87,8 +116,21 @@ export default function Projects() {
 
             {showForm && (
                 <form onSubmit={handleCreate} className="create-form glass fade-in">
-                    <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Project name" required />
-                    <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description" />
+                    <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Project name"
+                        required
+                    />
+
+                    <input
+                        type="text"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="Description"
+                    />
+
                     <div className="form-actions">
                         <button type="submit" className="btn-primary">Create</button>
                         <button type="button" className="btn-ghost" onClick={() => setShowForm(false)}>Cancel</button>
@@ -97,21 +139,44 @@ export default function Projects() {
             )}
 
             <div className="project-grid">
-                {projects.map(proj => (
-                    <div key={proj.id} className="project-card glass" onClick={() => navigate(`/projects/${proj.id}`)} style={{ borderLeft: `4px solid ${proj.color}` }}>
+                {projects.map((proj) => (
+                    <div
+                        key={proj.id}
+                        className="project-card glass"
+                        onClick={() => navigate(`/projects/${proj.id}`)}
+                        style={{ borderLeft: `4px solid ${proj.color}` }}
+                    >
                         <div className="project-card-header">
                             <FolderKanban size={20} style={{ color: proj.color }} />
-                            <button className="btn-icon-danger" onClick={(e) => { e.stopPropagation(); handleDelete(proj.id); }}>
+
+                            <button
+                                className="btn-icon-danger"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDelete(proj.id);
+                                }}
+                            >
                                 <Trash2 size={16} />
                             </button>
                         </div>
+
                         <h3>{proj.name}</h3>
                         <p className="text-muted">{proj.description || 'No description'}</p>
+
                         <div className="project-card-footer">
                             <div className="progress-bar">
-                                <div className="progress-fill" style={{ width: `${proj.task_count ? (proj.completed_count / proj.task_count) * 100 : 0}%`, backgroundColor: proj.color }}></div>
+                                <div
+                                    className="progress-fill"
+                                    style={{
+                                        width: `${proj.task_count ? (proj.completed_count / proj.task_count) * 100 : 0}%`,
+                                        backgroundColor: proj.color,
+                                    }}
+                                ></div>
                             </div>
-                            <span className="text-muted text-sm">{proj.completed_count}/{proj.task_count} tasks</span>
+
+                            <span className="text-muted text-sm">
+                                {proj.completed_count}/{proj.task_count} tasks
+                            </span>
                         </div>
                     </div>
                 ))}
