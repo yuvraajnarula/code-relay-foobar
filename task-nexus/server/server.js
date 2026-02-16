@@ -500,7 +500,6 @@ app.post("/api/workspaces/:workspaceId/invite", verifyToken, (req, res) => {
 
         if (err) return res.status(500).json({ error: err.message });
 
-        // Step 4: Create notification for invited user
         const notifQuery = `
           INSERT INTO notifications (user_id, type, title, message, meta)
           VALUES (?, ?, ?, ?, ?)
@@ -538,6 +537,49 @@ app.post("/api/workspaces/:workspaceId/invite", verifyToken, (req, res) => {
 });
 
 
+app.get("/api/notifications", verifyToken, (req, res) => {
+  const query = `
+    SELECT *
+    FROM notifications
+    WHERE user_id = ?
+    ORDER BY created_at DESC
+  `;
+
+  req.db.query(query, [req.user.id], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
+});
+
+
+app.get("/api/notifications/unread-count", verifyToken, (req, res) => {
+  const query = `
+    SELECT COUNT(*) as unread
+    FROM notifications
+    WHERE user_id = ? AND is_read = 0
+  `;
+
+  req.db.query(query, [req.user.id], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ unread: results[0].unread });
+  });
+});
+
+
+app.put("/api/notifications/:id/read", verifyToken, (req, res) => {
+  const notifId = req.params.id;
+
+  const query = `
+    UPDATE notifications
+    SET is_read = 1
+    WHERE id = ? AND user_id = ?
+  `;
+
+  req.db.query(query, [notifId, req.user.id], (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ success: true });
+  });
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
